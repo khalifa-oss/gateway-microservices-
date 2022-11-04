@@ -1,0 +1,38 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+       - id : r1
+         uri: https://weatherbit-v1-mashape.p.rapidapi.com/forecast
+         predicates :
+          - Path=/forecast/**
+         filters:
+           - AddRequestHeader=X-RapidAPI-Key,fcf3011dd4msh0217be77c33d6cbp138f87jsn4602ee097f15
+           - AddRequestHeader=X-RapidAPI-Host,weatherbit-v1-mashape.p.rapidapi.com
+           - name:  CircuitBreaker
+             args:
+               name: fallbackcmd
+               fallbackUri: forward:/inCaseOfFailure
+
+
+#       - id : r2
+#         uri: http://localhost:8082
+#         predicates :
+#         - Path=/product/**
+
+    discovery:
+      enabled: true
+  application:
+    name: gateway-service
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+
+server:
+  port: 8888
+  hystrix.command.fallbackcmd.execution.isolation.thread.timeoutInMilliseconds: 1000
+
+
+
